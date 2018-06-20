@@ -2,13 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hello.IdentityServer.Services;
+using IdentityServer4.Services;
+using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using QuickstartIdentityServer;
 
 namespace Hello.IdentityServer
 {
@@ -25,6 +30,19 @@ namespace Hello.IdentityServer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            var builder = services.AddIdentityServer()
+             .AddDeveloperSigningCredential()
+             .AddInMemoryPersistedGrants()
+             .AddInMemoryIdentityResources(Config.GetIdentityResources())
+             .AddInMemoryApiResources(Config.GetApiResources())
+             .AddInMemoryClients(Config.GetClients());
+
+            builder.Services.AddTransient<IResourceOwnerPasswordValidator, ResourceOwnerPasswordValidator>();
+            builder.Services.AddTransient<IProfileService, ProfileService>();
+
+            services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -34,6 +52,8 @@ namespace Hello.IdentityServer
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseIdentityServer();
 
             app.UseMvc();
         }
