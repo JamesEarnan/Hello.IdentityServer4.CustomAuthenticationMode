@@ -10,7 +10,7 @@ namespace Hello.IdentityServer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class ValuesController : ControllerBase
     {
         private readonly IHttpContextAccessor _httpContextAccessor;

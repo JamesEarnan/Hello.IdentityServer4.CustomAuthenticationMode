@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Hello.IdentityServer.Services;
+using IdentityServer4.AccessTokenValidation;
 using IdentityServer4.Services;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Builder;
@@ -41,6 +42,15 @@ namespace Hello.IdentityServer
             builder.Services.AddTransient<IResourceOwnerPasswordValidator, ResourceOwnerPasswordValidator>();
             builder.Services.AddTransient<IProfileService, ProfileService>();
 
+            services.AddAuthentication(
+               IdentityServerAuthenticationDefaults.AuthenticationScheme)
+                    .AddIdentityServerAuthentication(options =>
+                    {
+                        options.Authority = "http://localhost:60820"; // Auth Server
+                        options.RequireHttpsMetadata = false; // only for development
+                        options.ApiName = "api1"; // API Resource Id
+                    });
+
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 
         }
@@ -54,6 +64,8 @@ namespace Hello.IdentityServer
             }
 
             app.UseIdentityServer();
+
+            app.UseAuthentication();
 
             app.UseMvc();
         }
