@@ -63,6 +63,7 @@ namespace QuickstartIdentityServer
                         IdentityServerConstants.StandardScopes.Profile,
                         "api1"
                     },
+                     AllowOfflineAccess = true // Allow refresh token
                 },
 
                 // OpenID Connect hybrid flow and client credentials client (MVC)
